@@ -12,7 +12,8 @@ class  Program
             Console.WriteLine("1. Add Contact");
             Console.WriteLine("2. List Contacts");
             Console.WriteLine("3. Delete Contact");
-            Console.WriteLine("4. Exit");
+            Console.WriteLine("4. Edit Contact");
+            Console.WriteLine("5. Exit");
 
             Console.Write("Choose an option: ");
             var choice = Console.ReadLine();
@@ -53,6 +54,24 @@ class  Program
                     break;
 
                 case "4":
+                    Console.Write("Enter Contact ID to edit: ");
+                    if (int.TryParse(Console.ReadLine(), out int editId))
+                    {
+                        Console.Write("Enter new name (or press Enter to keep current): ");
+                        string? newName = Console.ReadLine();
+
+                        Console.Write("Enter new phone (or press Enter to keep current): ");
+                        string? newPhone = Console.ReadLine();
+
+                        ContactDatabase.EditContact(editId, newName, newPhone);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid ID.");
+                    }
+                    break;
+                                
+                case "5":
                     return;
 
                 default:

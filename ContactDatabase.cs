@@ -71,4 +71,35 @@ public class ContactDatabase
         else
             Console.WriteLine("Contact not found.");
     }
+    public static void EditContact(int id, string? newName, string? newPhone)
+    {
+    using var connection = new SQLiteConnection($"Data Source={contactsdb};Version=3;");
+    connection.Open();
+
+    string getQuery = "SELECT name, phone FROM contacts WHERE id = @id";
+    using var getCommand = new SQLiteCommand(getQuery, connection);
+    getCommand.Parameters.AddWithValue("@id", id);
+    using var reader = getCommand.ExecuteReader();
+
+    if (!reader.Read())
+    {
+        Console.WriteLine("Contact not found.");
+        return;
+    }
+
+    string currentName = reader.GetString(0);
+    string currentPhone = reader.GetString(1);
+
+    string finalName = string.IsNullOrWhiteSpace(newName) ? currentName : newName;
+    string finalPhone = string.IsNullOrWhiteSpace(newPhone) ? currentPhone : newPhone;
+
+    string updateQuery = "UPDATE contacts SET name = @name, phone = @phone WHERE id = @id";
+    using var updateCommand = new SQLiteCommand(updateQuery, connection);
+    updateCommand.Parameters.AddWithValue("@name", finalName);
+    updateCommand.Parameters.AddWithValue("@phone", finalPhone);
+    updateCommand.Parameters.AddWithValue("@id", id);
+
+    int rowsAffected = updateCommand.ExecuteNonQuery();
+    Console.WriteLine(rowsAffected > 0 ? "Contact updated!" : "Update failed.");
+    }
 }
