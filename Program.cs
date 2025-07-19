@@ -31,6 +31,14 @@ class  Program
                     {
                         Console.WriteLine("Name and phone cannot be empty!");
                     }
+                    else if (!ContactDatabase.IsValidPhoneNumber(phone))
+                    {
+                        Console.WriteLine("Invalid phone number format!");
+                    }
+                    else if (ContactDatabase.ContactExists(name, phone))
+                    {
+                        Console.WriteLine("Contact already exists!");
+                    }
                     else
                     {
                         ContactDatabase.AddContact(name, phone);
