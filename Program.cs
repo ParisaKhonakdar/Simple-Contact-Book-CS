@@ -13,7 +13,8 @@ class  Program
             Console.WriteLine("2. List Contacts");
             Console.WriteLine("3. Delete Contact");
             Console.WriteLine("4. Edit Contact");
-            Console.WriteLine("5. Exit");
+            Console.WriteLine("5. Search Contacts");
+            Console.WriteLine("6. Exit");
 
             Console.Write("Choose an option: ");
             var choice = Console.ReadLine();
@@ -71,15 +72,28 @@ class  Program
                         Console.Write("Enter new phone (or press Enter to keep current): ");
                         string? newPhone = Console.ReadLine();
 
-                        ContactDatabase.EditContact(editId, newName, newPhone);
+                        ContactDatabase.EditContact(editId, newName, newPhone);               
                     }
                     else
                     {
                         Console.WriteLine("Invalid ID.");
                     }
                     break;
-                                
+
                 case "5":
+                    Console.Write("Enter search term: ");
+                    string? term = Console.ReadLine();
+                    if (!string.IsNullOrWhiteSpace(term))
+                    {
+                        ContactDatabase.SearchContacts(term);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Search term cannot be empty.");
+                    }
+                    break;
+
+                case "6":
                     return;
 
                 default:

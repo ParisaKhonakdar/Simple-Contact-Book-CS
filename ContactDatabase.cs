@@ -120,5 +120,21 @@ public class ContactDatabase
         long count = (long)command.ExecuteScalar();
         return count > 0;
     }
+    public static void SearchContacts(string term)
+    {
+        using var connection = new SQLiteConnection($"Data Source={contactsdb};Version=3;");
+        connection.Open();
+
+        string query = "SELECT Id, Name, Phone FROM Contacts WHERE Name LIKE @term OR Phone LIKE @term";
+        using var command = new SQLiteCommand(query, connection);
+        command.Parameters.AddWithValue("@term", $"%{term}%");
+
+        using var reader = command.ExecuteReader();
+        Console.WriteLine("\nSearch Results:");
+        while (reader.Read())
+        {
+            Console.WriteLine($"ID: {reader["Id"]} | Name: {reader["Name"]} | Phone: {reader["Phone"]}");
+        }
+    }
 
 }
