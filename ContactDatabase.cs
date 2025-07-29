@@ -1,9 +1,17 @@
 using System;
 using System.Data.SQLite;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 public class ContactDatabase
 {
+        public class Contact
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public string Phone { get; set; } = "";
+    }
     private static string contactsdb = "contacts.db";
 
     public static void Initialize()
@@ -135,6 +143,32 @@ public class ContactDatabase
         {
             Console.WriteLine($"ID: {reader["Id"]} | Name: {reader["Name"]} | Phone: {reader["Phone"]}");
         }
+    }
+    public static void ExportToJson()
+    {
+        var contacts = new List<Contact>();
+
+        using var connection = new SQLiteConnection($"Data Source={contactsdb};Version=3;");
+        connection.Open();
+
+        string query = "SELECT Id, Name, Phone FROM Contacts";
+        using var command = new SQLiteCommand(query, connection);
+        using var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            contacts.Add(new Contact
+            {
+                Id = Convert.ToInt32(reader["Id"]),
+                Name = reader["Name"].ToString() ?? "",
+                Phone = reader["Phone"].ToString() ?? ""
+            });
+        }
+
+        var json = JsonSerializer.Serialize(contacts, new JsonSerializerOptions { WriteIndented = true });
+        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "contacts_export.json");
+        File.WriteAllText(filePath, json);
+        Console.WriteLine($"Contacts exported to: {filePath}");
     }
 
 }

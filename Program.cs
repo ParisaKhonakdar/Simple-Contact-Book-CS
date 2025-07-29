@@ -14,7 +14,8 @@ class  Program
             Console.WriteLine("3. Delete Contact");
             Console.WriteLine("4. Edit Contact");
             Console.WriteLine("5. Search Contacts");
-            Console.WriteLine("6. Exit");
+            Console.WriteLine("6. Export Contacts to JSON");
+            Console.WriteLine("7. Exit");
 
             Console.Write("Choose an option: ");
             var choice = Console.ReadLine();
@@ -94,6 +95,10 @@ class  Program
                     break;
 
                 case "6":
+                    ContactDatabase.ExportToJson();
+                    break;
+
+                case "7":
                     return;
 
                 default:
