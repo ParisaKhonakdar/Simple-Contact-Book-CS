@@ -36,31 +36,40 @@ public class ContactDatabase
 
     public static void AddContact(string name, string phone)
     {
-        using var connection = new SQLiteConnection($"Data Source={contactsdb};Version=3;");
-        connection.Open();
+        try
+        {
+            using var connection = new SQLiteConnection($"Data Source={contactsdb};Version=3;");
+            connection.Open();
 
-        string insertQuery = "INSERT INTO Contacts (Name, Phone) VALUES (@name, @phone);";
-        using var command = new SQLiteCommand(insertQuery, connection);
-        command.Parameters.AddWithValue("@name", name);
-        command.Parameters.AddWithValue("@phone", phone);
-
-        command.ExecuteNonQuery();
-        Console.WriteLine("Contact added.");
+            using var command = new SQLiteCommand("INSERT INTO Contacts (Name, Phone) VALUES (@name, @phone)", connection);
+            command.Parameters.AddWithValue("@name", name);
+            command.Parameters.AddWithValue("@phone", phone);
+            command.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Error] Failed to add contact: {ex.Message}");
+        }
     }
 
     public static void ListContacts()
     {
-        using var connection = new SQLiteConnection($"Data Source={contactsdb};Version=3;");
-        connection.Open();
-
-        string selectQuery = "SELECT * FROM Contacts;";
-        using var command = new SQLiteCommand(selectQuery, connection);
-        using var reader = command.ExecuteReader();
-
-        Console.WriteLine("\nContacts:");
-        while (reader.Read())
+        try
         {
-            Console.WriteLine($"{reader["Id"]}: {reader["Name"]} - {reader["Phone"]}");
+            using var connection = new SQLiteConnection($"Data Source={contactsdb};Version=3;");
+            connection.Open();
+
+            using var command = new SQLiteCommand("SELECT Id, Name, Phone FROM Contacts", connection);
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Console.WriteLine($"{reader["Id"]}: {reader["Name"]} - {reader["Phone"]}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Error] Failed to list contacts: {ex.Message}");
         }
     }
 
@@ -165,10 +174,17 @@ public class ContactDatabase
             });
         }
 
-        var json = JsonSerializer.Serialize(contacts, new JsonSerializerOptions { WriteIndented = true });
-        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "contacts_export.json");
-        File.WriteAllText(filePath, json);
-        Console.WriteLine($"Contacts exported to: {filePath}");
+        try
+        {
+            var json = JsonSerializer.Serialize(contacts, new JsonSerializerOptions { WriteIndented = true });
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "contacts_export.json");
+            File.WriteAllText(filePath, json);
+            Console.WriteLine($"Contacts exported to: {filePath}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Error] Failed to export contacts: {ex.Message}");
+        }
     }
 
 }
